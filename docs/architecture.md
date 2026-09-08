@@ -1,13 +1,11 @@
 # Architecture
 
-Best Harness is a single portable Skill bundle:
+Best Harness is a self-contained execution bundle:
 
-- `skills/best-harness/SKILL.md`: agent-facing guidance;
-- `skills/best-harness/scripts/`: the self-contained Go CLI and tests;
+- `skills/best-harness/SKILL.md`: default task lifecycle and command routing;
+- `skills/best-harness/scripts/`: Go CLI, checks, task records, verification receipts, and tests;
 - `.codex-plugin/plugin.json`: Codex plugin metadata.
 
-Installing the Skill copies its CLI source alongside the instructions. The installed command uses no shell and only the Go standard library plus Git.
+The CLI has three direct controls: idempotent task records, deterministic Git checks, and explicit verification commands with receipts. Runtime receipts live under `.best-harness/` in the target repository and are intentionally excluded from the Skill source tree.
 
-The CLI collects local repository metadata: Git status, staged paths, guidance-file presence, and likely verification commands. It does not read coding-agent transcripts, network services, credentials, or organization-specific files.
-
-A report separates observed evidence from suggested checks. Project owners retain responsibility for choosing, running, and interpreting their own validation commands.
+No session collector, scoring model, workflow analyzer, project-specific convention, or external service is part of the core.

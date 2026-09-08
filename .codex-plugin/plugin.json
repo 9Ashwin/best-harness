@@ -1,7 +1,7 @@
 {
   "name": "best-harness",
   "version": "0.1.0",
-  "description": "Evidence-first delivery inspection and optional task conventions for coding agents.",
+  "description": "Direct task, check, and verification controls for coding agents.",
   "author": {
     "name": "Best Harness contributors",
     "email": "ashwin@users.noreply.github.com",
@@ -15,7 +15,7 @@
   "interface": {
     "displayName": "Best Harness",
     "shortDescription": "Inspect delivery evidence and create optional task records",
-    "longDescription": "A portable, evidence-first toolkit for coding-agent delivery checks, Git inspection, and tracker-optional task records.",
+    "longDescription": "A portable execution Harness with task records, deterministic Git checks, and verification receipts for coding agents.",
     "developerName": "Best Harness contributors",
     "category": "Developer Tools",
     "capabilities": ["Interactive", "Read", "Write"],

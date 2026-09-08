@@ -7,4 +7,4 @@ vet:
 	go -C skills/best-harness/scripts vet ./...
 
 check: test vet
-	go -C skills/best-harness/scripts run . inspect --format markdown
+	go -C skills/best-harness/scripts run . check --staged

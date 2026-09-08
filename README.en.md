@@ -1,37 +1,22 @@
 <p align="center"><strong>Best Harness</strong></p>
 
-<p align="center">Evidence first. Better coding-agent delivery loops.</p>
+<p align="center">Reusable task, check, and verification controls for coding agents.</p>
 
 [简体中文](README.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md)
 
-Best Harness is a small, portable toolkit for inspecting the evidence around a coding-agent task. It reports what a Git repository actually exposes—guidance files, worktree changes, staged paths, and likely verification commands—without turning missing evidence into a score or a claim of correctness.
+Best Harness is an installable Agent Skill. It does not analyze sessions, score workflows, or turn project files into suggestions. It brings a reusable execution Harness into any Git project: default task records, deterministic Git checks, and verification receipts.
 
-For a concrete implementation, design, investigation, or delivery task, it creates or reuses a lightweight Markdown task record and produces a Codex-friendly title. IDs remain optional, so it works with GitHub issues, external requirement systems, or no tracker at all.
+## Three direct actions
 
-## Quick start
+| Action | Command | Result |
+| --- | --- | --- |
+| Establish a task boundary | `task ensure` | Creates or reuses `tasks/<name>/README.md` and prints a Codex-friendly title |
+| Check before delivery | `check --staged` | Runs `git diff --check` and checks for unmerged index entries |
+| Record verification | `verify run -- <command>` | Runs a project check and stores a sanitized receipt with exit code, duration, and command hash |
 
-From a source checkout:
+Task IDs are optional. With an ID, the title is `ID · title` and the directory is `tasks/<id>-<title>/`; without one, the title and `tasks/<title>/` are used directly. A user-specified title, ID, directory, or naming format wins.
 
-```bash
-go -C skills/best-harness/scripts run . inspect --staged --format markdown
-go -C skills/best-harness/scripts run . task title --title "Improve export reliability"
-go -C skills/best-harness/scripts run . task ensure --title "Improve export reliability"
-```
-
-With an optional external reference and a custom task directory:
-
-```bash
-go -C skills/best-harness/scripts run . task ensure \
-  --id "GH-42" \
-  --title "Improve export reliability" \
-  --dir planning
-```
-
-The task helper creates `planning/gh-42-improve-export-reliability/README.md`. Without `--id`, it creates `tasks/improve-export-reliability/README.md`. `task ensure` reuses an existing matching `README.md` without overwriting it.
-
-## Install the Skill with npx
-
-Install the complete Skill bundle, including its Go scripts, into the current project for Codex:
+## Install with npx
 
 ```bash
 npx -y skills@latest add 9Ashwin/best-harness \
@@ -40,40 +25,48 @@ npx -y skills@latest add 9Ashwin/best-harness \
   --yes
 ```
 
-The installer creates `.agents/skills/best-harness/`. Run the bundled CLI from that directory:
+The installer copies the complete Skill and its Go scripts to `.agents/skills/best-harness/`.
+
+## Use in a project
+
+For a concrete task, the agent first creates or reuses a task record:
 
 ```bash
-go -C .agents/skills/best-harness/scripts run . inspect --staged --format markdown
+go -C .agents/skills/best-harness/scripts run . task ensure \
+  --id "GH-42" --title "Improve export reliability"
 ```
 
-Use `--global` to install it for every Codex project. Start a new agent session after installation so the Skill inventory reloads.
+Check the actual staged change before delivery:
 
-## What it observes
+```bash
+go -C .agents/skills/best-harness/scripts run . check --staged
+```
 
-| Area | Evidence | Boundary |
-| --- | --- | --- |
-| Guidance | Presence of `AGENTS.md` and `CLAUDE.md` | Does not prove the agent used them |
-| Git state | Worktree and optional staged-path counts | Does not assess change quality |
-| Verification | Likely commands inferred from `go.mod`, `package.json`, or `pyproject.toml` | Does not run or claim those checks passed |
-| Task record | An optional local Markdown file | Does not create an issue or require an ID |
+Run and record the project's own verification command:
 
-## Codex plugin
+```bash
+go -C .agents/skills/best-harness/scripts run . verify run \
+  --label unit-tests -- go test ./...
+```
 
-The repository includes a Codex plugin manifest and the `$best-harness` Skill under [`skills/best-harness`](skills/best-harness/SKILL.md). It intentionally has no host adapter, session collector, or external service dependency.
+Receipts are stored under `.best-harness/receipts/`. They retain a label, command hash, status, exit code, and duration, never raw command arguments or output.
+
+## Boundaries
+
+- No requirement ID, issue tracker, task system, or fixed directory is required.
+- It does not read agent sessions, business data, credentials, or external services.
+- It does not modify business code, commit, push, or publish automatically.
+- A Git check or verification receipt proves only the condition that actually ran.
 
 ## Development
 
 ```bash
 go -C skills/best-harness/scripts test ./...
 go -C skills/best-harness/scripts vet ./...
-go -C skills/best-harness/scripts run . inspect --format markdown
+go -C skills/best-harness/scripts run . check --staged
 ```
 
-The GitHub Actions matrix runs tests and vet on Ubuntu, macOS, and Windows.
-
-## Inspiration
-
-The project structure and evidence-first stance were informed by [QoderAI/better-harness](https://github.com/QoderAI/better-harness), while this implementation is a separate, smaller Go project with no copied workflow assets or project data.
+GitHub Actions runs tests and vet on Ubuntu, macOS, and Windows.
 
 ## License
 
