@@ -13,6 +13,7 @@ Best Harness 是一个可安装的 Agent Skill。它不分析会话、不生成�
 | 建立任务边界 | `task ensure` | 创建或复用 `tasks/<名称>/README.md`，并输出 Codex 会话标题 |
 | 交付前检查 | `check --staged` | 运行 `git diff --check` 并检查未合并索引项 |
 | 记录验证 | `verify run -- <命令>` | 执行项目检查，写入脱敏退出码、耗时和命令哈希回执 |
+| 收集已验证纠正 | `evolve observe` | 记录可复用的 Skill 改进候选，不保存会话全文 |
 
 任务 ID 可选：有 ID 时标题为 `ID · 标题`、目录为 `tasks/<id>-<标题>/`；无 ID 时直接使用标题和 `tasks/<标题>/`。用户提供的标题、ID、目录或命名格式优先。
 
@@ -50,6 +51,8 @@ go -C .agents/skills/best-harness/scripts run . verify run \
 ```
 
 验证回执默认保存到 `.best-harness/receipts/`。它只记录标签、命令哈希、状态、退出码和耗时；不保存原始命令或输出。
+
+对于已验证的重复纠正，可用 `evolve observe` 记录到 `.best-harness/evolution/`。它只接受当前 Skill Markdown 目标和仓库内证据文件；不修改业务代码或自动提交。候选进入 `review_pending` 后，使用 `evolve apply --key <candidate> --lesson "<规则>"` 追加一条经复核的目标 Skill 规则；它会再次核对目标与证据哈希。
 
 ## 边界
 

@@ -75,6 +75,34 @@ func TestCreateTaskPrefixesOptionalID(t *testing.T) {
 	}
 }
 
+func TestObserveEvolutionUsesEvidenceGate(t *testing.T) {
+	root := gitFixture(t)
+	write(t, filepath.Join(root, ".agents", "skills", "demo", "SKILL.md"), "---\nname: demo\ndescription: Demo.\n---\n\n# Demo\n")
+	write(t, filepath.Join(root, "evidence.md"), "verified evidence\n")
+	if err := os.MkdirAll(filepath.Join(root, ".agents", "skills", "demo"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	observation, candidate, err := ObserveEvolution(ObserveOptions{
+		Root: root, Task: "task-one", Target: ".agents/skills/demo/SKILL.md", LessonKey: "check-first",
+		Signal: "user-correction", Summary: "A verified correction requires the shared check.", Evidence: "evidence.md", Check: "go test ./...",
+	})
+	if err != nil || observation.ID == "" || candidate.State != "review_pending" {
+		t.Fatalf("observation=%#v candidate=%#v err=%v", observation, candidate, err)
+	}
+	status, err := EvolutionStatus(root)
+	if err != nil || len(status) != 1 || status[0].Key != candidate.Key {
+		t.Fatalf("status=%#v err=%v", status, err)
+	}
+	applied, err := ApplyEvolution(root, candidate.Key, "运行这类任务前先保存实际验证回执。")
+	if err != nil || applied.State != "applied" {
+		t.Fatalf("applied=%#v err=%v", applied, err)
+	}
+	target, err := os.ReadFile(filepath.Join(root, ".agents", "skills", "demo", "SKILL.md"))
+	if err != nil || !strings.Contains(string(target), "## Harness lessons") {
+		t.Fatalf("target=%s err=%v", target, err)
+	}
+}
+
 func gitFixture(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
@@ -89,6 +117,9 @@ func gitFixture(t *testing.T) string {
 
 func write(t *testing.T, path, body string) {
 	t.Helper()
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		t.Fatal(err)
+	}
 	if err := os.WriteFile(path, []byte(body), 0644); err != nil {
 		t.Fatal(err)
 	}

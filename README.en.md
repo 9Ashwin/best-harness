@@ -13,6 +13,7 @@ Best Harness is an installable Agent Skill. It does not analyze sessions, score 
 | Establish a task boundary | `task ensure` | Creates or reuses `tasks/<name>/README.md` and prints a Codex-friendly title |
 | Check before delivery | `check --staged` | Runs `git diff --check` and checks for unmerged index entries |
 | Record verification | `verify run -- <command>` | Runs a project check and stores a sanitized receipt with exit code, duration, and command hash |
+| Capture a verified correction | `evolve observe` | Records a reusable Skill-improvement candidate without storing the full session |
 
 Task IDs are optional. With an ID, the title is `ID · title` and the directory is `tasks/<id>-<title>/`; without one, the title and `tasks/<title>/` are used directly. A user-specified title, ID, directory, or naming format wins.
 
@@ -50,6 +51,8 @@ go -C .agents/skills/best-harness/scripts run . verify run \
 ```
 
 Receipts are stored under `.best-harness/receipts/`. They retain a label, command hash, status, exit code, and duration, never raw command arguments or output.
+
+For a verified repeated correction, `evolve observe` records a candidate under `.best-harness/evolution/`. It accepts only a current Skill Markdown target and repository evidence, and never modifies business code or commits automatically. A `review_pending` candidate is applied with `evolve apply --key <candidate> --lesson "<rule>"`, which rechecks the target and evidence hashes.
 
 ## Boundaries
 

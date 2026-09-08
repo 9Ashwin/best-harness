@@ -42,3 +42,30 @@ go -C .agents/skills/best-harness/scripts run . verify run \
 ```
 
 不要把建议命令、配置文件存在或任务记录当作通过证据；只有该命令实际运行并返回成功才是验证回执。
+
+## 记录可复用纠正
+
+只有已经验证的用户纠正、修复或评审发现才记录为演进观察。观察必须带当前 Skill 目标、仓库内证据文件和实际检查；不保存聊天全文或原始日志。
+
+```bash
+go -C .agents/skills/best-harness/scripts run . evolve observe \
+  --task export-fix \
+  --target .agents/skills/best-harness/SKILL.md \
+  --lesson-key verify-before-delivery \
+  --signal user-correction \
+  --summary "交付前必须记录实际验证回执。" \
+  --evidence .best-harness/receipts/<receipt>.json \
+  --check "go test ./..."
+```
+
+`user-correction` 一条已验证观察即可进入 `review_pending`；其他信号需要两个不同任务。候选和脱敏观察保存在 `.best-harness/evolution/`，不改业务代码、提交或推送。
+
+候选进入 `review_pending` 后，先阅读观察和目标 Skill，再由 Agent 归纳一条短的可复用规则，调用：
+
+```bash
+go -C .agents/skills/best-harness/scripts run . evolve apply \
+  --key <candidate-key> \
+  --lesson "运行这类任务前先保存实际验证回执。"
+```
+
+`apply` 会重新核对目标和所有证据哈希；任一变化都会拒绝写入。它只向目标 Skill 追加规则，不修改业务代码、提交或推送。

@@ -32,10 +32,70 @@ func run(args []string) (int, error) {
 		return check(args[1:])
 	case "verify":
 		return verify(args[1:])
+	case "evolve":
+		return evolve(args[1:])
 	case "task":
 		return task(args[1:])
 	default:
 		return 2, fmt.Errorf("unknown command %q", args[0])
+	}
+}
+
+func evolve(args []string) (int, error) {
+	if len(args) == 0 {
+		return 2, errors.New("evolve requires observe or status")
+	}
+	switch args[0] {
+	case "status":
+		flags := flag.NewFlagSet("evolve status", flag.ContinueOnError)
+		flags.SetOutput(os.Stderr)
+		root := flags.String("root", ".", "Git checkout that owns the evolution state")
+		if err := flags.Parse(args[1:]); err != nil {
+			return 2, err
+		}
+		result, err := harness.EvolutionStatus(*root)
+		if err != nil {
+			return 2, err
+		}
+		printJSON(result)
+		return 0, nil
+	case "observe":
+		flags := flag.NewFlagSet("evolve observe", flag.ContinueOnError)
+		flags.SetOutput(os.Stderr)
+		root := flags.String("root", ".", "Git checkout that owns the evolution state")
+		task := flags.String("task", "", "stable task key")
+		target := flags.String("target", "", "repository-relative Skill Markdown target")
+		lesson := flags.String("lesson-key", "", "stable reusable lesson key")
+		signal := flags.String("signal", "", "user-correction, verified-fix, or review-finding")
+		summary := flags.String("summary", "", "one-line verified observation")
+		evidence := flags.String("evidence", "", "repository-relative evidence file")
+		check := flags.String("check", "", "verification command that established the observation")
+		if err := flags.Parse(args[1:]); err != nil {
+			return 2, err
+		}
+		observation, candidate, err := harness.ObserveEvolution(harness.ObserveOptions{Root: *root, Task: *task, Target: *target, LessonKey: *lesson, Signal: *signal, Summary: *summary, Evidence: *evidence, Check: *check})
+		if err != nil {
+			return 2, err
+		}
+		printJSON(map[string]any{"observation": observation, "candidate": candidate})
+		return 0, nil
+	case "apply":
+		flags := flag.NewFlagSet("evolve apply", flag.ContinueOnError)
+		flags.SetOutput(os.Stderr)
+		root := flags.String("root", ".", "Git checkout that owns the evolution state")
+		key := flags.String("key", "", "candidate key")
+		lesson := flags.String("lesson", "", "one-line approved Skill lesson")
+		if err := flags.Parse(args[1:]); err != nil {
+			return 2, err
+		}
+		candidate, err := harness.ApplyEvolution(*root, *key, *lesson)
+		if err != nil {
+			return 2, err
+		}
+		printJSON(candidate)
+		return 0, nil
+	default:
+		return 2, fmt.Errorf("unknown evolve command %q", args[0])
 	}
 }
 
@@ -164,6 +224,9 @@ func printUsage() {
 Usage:
   best-harness check [--root <path>] [--staged]
   best-harness verify run --label <name> [--root <path>] [--output <path>] -- <command> [args...]
+  best-harness evolve observe --task <key> --target <skill.md> --lesson-key <key> --signal <signal> --summary <text> --evidence <file> --check <command>
+  best-harness evolve apply --key <candidate> --lesson <text> [--root <path>]
+  best-harness evolve status [--root <path>]
   best-harness task title --title <text> [--id <reference>]
   best-harness task ensure --title <text> [--id <reference>] [--root <path>] [--dir <directory>]
   best-harness task new --title <text> [--id <reference>] [--root <path>] [--dir <directory>]
