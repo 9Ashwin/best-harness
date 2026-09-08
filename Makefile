@@ -1,10 +1,10 @@
 .PHONY: test vet check
 
 test:
-	go test ./...
+	go -C skills/best-harness/scripts test ./...
 
 vet:
-	go vet ./...
+	go -C skills/best-harness/scripts vet ./...
 
 check: test vet
-	go run ./cmd/best-harness inspect --format markdown
+	go -C skills/best-harness/scripts run . inspect --format markdown

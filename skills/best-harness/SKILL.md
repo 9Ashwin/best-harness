@@ -12,7 +12,7 @@ Best Harness turns observable repository state into bounded evidence. It disting
 Run from the target repository:
 
 ```bash
-go run github.com/9Ashwin/best-harness/cmd/best-harness@latest inspect --staged --format markdown
+go -C .agents/skills/best-harness/scripts run . inspect --staged --format markdown
 ```
 
 Use the report to identify guidance files, worktree state, staged paths, and likely verification commands. Run the relevant project checks separately; a suggested command is not a passing result.
@@ -22,15 +22,15 @@ Use the report to identify guidance files, worktree state, staged paths, and lik
 Use `task title` to produce a Codex-friendly title without creating files:
 
 ```bash
-best-harness task title --title "Improve order export"
-best-harness task title --id "GH-42" --title "Improve order export"
+go -C .agents/skills/best-harness/scripts run . task title --title "Improve order export"
+go -C .agents/skills/best-harness/scripts run . task title --id "GH-42" --title "Improve order export"
 ```
 
 Use `task new` only when the user wants a persistent local task record. `--id` is optional, and `--dir` can be any repository-relative directory:
 
 ```bash
-best-harness task new --title "Improve order export"
-best-harness task new --id "GH-42" --title "Improve order export" --dir planning
+go -C .agents/skills/best-harness/scripts run . task new --title "Improve order export"
+go -C .agents/skills/best-harness/scripts run . task new --id "GH-42" --title "Improve order export" --dir planning
 ```
 
 The command writes one Markdown task file. It never creates issues, sends messages, reads session transcripts, or assumes a specific tracker.

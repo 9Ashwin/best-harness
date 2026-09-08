@@ -13,15 +13,15 @@ Best Harness 是一个轻量、可移植的编码 Agent 工作流工具。它只
 在项目源码目录执行：
 
 ```bash
-go run ./cmd/best-harness inspect --staged --format markdown
-go run ./cmd/best-harness task title --title "提升导出可靠性"
-go run ./cmd/best-harness task new --title "提升导出可靠性"
+go -C skills/best-harness/scripts run . inspect --staged --format markdown
+go -C skills/best-harness/scripts run . task title --title "提升导出可靠性"
+go -C skills/best-harness/scripts run . task new --title "提升导出可靠性"
 ```
 
 带可选外部编号、并指定任务目录：
 
 ```bash
-go run ./cmd/best-harness task new \
+go -C skills/best-harness/scripts run . task new \
   --id "GH-42" \
   --title "提升导出可靠性" \
   --dir planning
@@ -45,9 +45,9 @@ go run ./cmd/best-harness task new \
 ## 开发
 
 ```bash
-go test ./...
-go vet ./...
-go run ./cmd/best-harness inspect --format markdown
+go -C skills/best-harness/scripts test ./...
+go -C skills/best-harness/scripts vet ./...
+go -C skills/best-harness/scripts run . inspect --format markdown
 ```
 
 GitHub Actions 会在 Ubuntu、macOS 和 Windows 上运行测试与 vet。

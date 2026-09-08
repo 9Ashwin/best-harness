@@ -13,15 +13,15 @@ It also provides an optional task helper for a Codex-friendly title and a lightw
 From a source checkout:
 
 ```bash
-go run ./cmd/best-harness inspect --staged --format markdown
-go run ./cmd/best-harness task title --title "Improve export reliability"
-go run ./cmd/best-harness task new --title "Improve export reliability"
+go -C skills/best-harness/scripts run . inspect --staged --format markdown
+go -C skills/best-harness/scripts run . task title --title "Improve export reliability"
+go -C skills/best-harness/scripts run . task new --title "Improve export reliability"
 ```
 
 With an optional external reference and a custom task directory:
 
 ```bash
-go run ./cmd/best-harness task new \
+go -C skills/best-harness/scripts run . task new \
   --id "GH-42" \
   --title "Improve export reliability" \
   --dir planning
@@ -45,9 +45,9 @@ The repository includes a Codex plugin manifest and the `$best-harness` Skill un
 ## Development
 
 ```bash
-go test ./...
-go vet ./...
-go run ./cmd/best-harness inspect --format markdown
+go -C skills/best-harness/scripts test ./...
+go -C skills/best-harness/scripts vet ./...
+go -C skills/best-harness/scripts run . inspect --format markdown
 ```
 
 The GitHub Actions matrix runs tests and vet on Ubuntu, macOS, and Windows.
