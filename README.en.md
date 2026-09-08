@@ -6,7 +6,7 @@
 
 Best Harness is a small, portable toolkit for inspecting the evidence around a coding-agent task. It reports what a Git repository actually exposes—guidance files, worktree changes, staged paths, and likely verification commands—without turning missing evidence into a score or a claim of correctness.
 
-It also provides an optional task helper for a Codex-friendly title and a lightweight Markdown task record. IDs are optional, so it works with GitHub issues, external requirement systems, or no tracker at all.
+For a concrete implementation, design, investigation, or delivery task, it creates or reuses a lightweight Markdown task record and produces a Codex-friendly title. IDs remain optional, so it works with GitHub issues, external requirement systems, or no tracker at all.
 
 ## Quick start
 
@@ -15,19 +15,19 @@ From a source checkout:
 ```bash
 go -C skills/best-harness/scripts run . inspect --staged --format markdown
 go -C skills/best-harness/scripts run . task title --title "Improve export reliability"
-go -C skills/best-harness/scripts run . task new --title "Improve export reliability"
+go -C skills/best-harness/scripts run . task ensure --title "Improve export reliability"
 ```
 
 With an optional external reference and a custom task directory:
 
 ```bash
-go -C skills/best-harness/scripts run . task new \
+go -C skills/best-harness/scripts run . task ensure \
   --id "GH-42" \
   --title "Improve export reliability" \
   --dir planning
 ```
 
-The task helper creates `planning/gh-42-improve-export-reliability/README.md`. Without `--id`, it creates `tasks/improve-export-reliability/README.md`.
+The task helper creates `planning/gh-42-improve-export-reliability/README.md`. Without `--id`, it creates `tasks/improve-export-reliability/README.md`. `task ensure` reuses an existing matching `README.md` without overwriting it.
 
 ## Install the Skill with npx
 

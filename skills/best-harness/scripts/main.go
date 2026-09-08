@@ -65,7 +65,7 @@ func inspect(args []string) error {
 
 func task(args []string) error {
 	if len(args) == 0 {
-		return errors.New("task requires new or title")
+		return errors.New("task requires ensure, new, or title")
 	}
 	switch args[0] {
 	case "title":
@@ -83,28 +83,51 @@ func task(args []string) error {
 		fmt.Println(result)
 		return nil
 	case "new":
-		flags := flag.NewFlagSet("task new", flag.ContinueOnError)
-		flags.SetOutput(os.Stderr)
-		root := flags.String("root", ".", "Git checkout that owns the task")
-		directory := flags.String("dir", "tasks", "relative task directory")
-		id := flags.String("id", "", "optional issue or external reference")
-		title := flags.String("title", "", "human-readable task title")
-		if err := flags.Parse(args[1:]); err != nil {
-			return err
-		}
-		result, err := harness.CreateTask(harness.TaskOptions{Root: *root, Directory: *directory, ID: *id, Title: *title})
-		if err != nil {
-			return err
-		}
-		relative, err := filepath.Rel(*root, result.Path)
-		if err != nil {
-			relative = result.Path
-		}
-		fmt.Printf("created %s\n%s\n", result.Title, filepath.ToSlash(relative))
-		return nil
+		return createTask(args[1:], false)
+	case "ensure":
+		return createTask(args[1:], true)
 	default:
 		return fmt.Errorf("unknown task command %q", args[0])
 	}
+}
+
+func createTask(args []string, ensure bool) error {
+	command := "task new"
+	if ensure {
+		command = "task ensure"
+	}
+	flags := flag.NewFlagSet(command, flag.ContinueOnError)
+	flags.SetOutput(os.Stderr)
+	root := flags.String("root", ".", "Git checkout that owns the task")
+	directory := flags.String("dir", "tasks", "relative task directory")
+	id := flags.String("id", "", "optional issue or external reference")
+	title := flags.String("title", "", "human-readable task title")
+	if err := flags.Parse(args); err != nil {
+		return err
+	}
+	options := harness.TaskOptions{Root: *root, Directory: *directory, ID: *id, Title: *title}
+	var (
+		result harness.Task
+		err    error
+	)
+	if ensure {
+		result, err = harness.EnsureTask(options)
+	} else {
+		result, err = harness.CreateTask(options)
+	}
+	if err != nil {
+		return err
+	}
+	relative, err := filepath.Rel(*root, result.Path)
+	if err != nil {
+		relative = result.Path
+	}
+	state := "existing"
+	if result.Created {
+		state = "created"
+	}
+	fmt.Printf("%s %s\n%s\n", state, result.Title, filepath.ToSlash(relative))
+	return nil
 }
 
 func printUsage() {
@@ -113,6 +136,7 @@ func printUsage() {
 Usage:
   best-harness inspect [--root <path>] [--staged] [--format json|markdown]
   best-harness task title --title <text> [--id <reference>]
+  best-harness task ensure --title <text> [--id <reference>] [--root <path>] [--dir <directory>]
   best-harness task new --title <text> [--id <reference>] [--root <path>] [--dir <directory>]
 `)
 }

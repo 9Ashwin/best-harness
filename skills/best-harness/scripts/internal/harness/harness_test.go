@@ -81,6 +81,19 @@ func TestCreateTaskPrefixesOptionalID(t *testing.T) {
 	}
 }
 
+func TestEnsureTaskCreatesThenReusesDefaultTask(t *testing.T) {
+	root := gitFixture(t)
+	options := TaskOptions{Root: root, Title: "Improve export"}
+	first, err := EnsureTask(options)
+	if err != nil || !first.Created {
+		t.Fatalf("first ensure: %#v, %v", first, err)
+	}
+	second, err := EnsureTask(options)
+	if err != nil || second.Created || second.Path != first.Path {
+		t.Fatalf("second ensure: %#v, %v", second, err)
+	}
+}
+
 func hasEvidence(report Inspection, area, state string) bool {
 	for _, item := range report.Evidence {
 		if item.Area == area && item.State == state {

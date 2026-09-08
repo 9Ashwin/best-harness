@@ -18,8 +18,9 @@ type TaskOptions struct {
 }
 
 type Task struct {
-	Title string
-	Path  string
+	Title   string
+	Path    string
+	Created bool
 }
 
 func CanonicalTitle(id, title string) (string, error) {
@@ -41,6 +42,15 @@ func CanonicalTitle(id, title string) (string, error) {
 }
 
 func CreateTask(options TaskOptions) (Task, error) {
+	return writeTask(options, false)
+}
+
+// EnsureTask returns an existing matching task record or creates it once.
+func EnsureTask(options TaskOptions) (Task, error) {
+	return writeTask(options, true)
+}
+
+func writeTask(options TaskOptions, allowExisting bool) (Task, error) {
 	title, err := CanonicalTitle(options.ID, options.Title)
 	if err != nil {
 		return Task{}, err
@@ -62,6 +72,15 @@ func CreateTask(options TaskOptions) (Task, error) {
 	}
 	path := filepath.Join(root, directory, name)
 	if _, err := os.Stat(path); err == nil {
+		if allowExisting {
+			file := filepath.Join(path, "README.md")
+			if _, fileErr := os.Stat(file); fileErr == nil {
+				return Task{Title: title, Path: file, Created: false}, nil
+			} else if !errors.Is(fileErr, os.ErrNotExist) {
+				return Task{}, fileErr
+			}
+			return Task{}, fmt.Errorf("existing task directory has no README.md: %s", path)
+		}
 		return Task{}, fmt.Errorf("task directory already exists: %s", path)
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return Task{}, err
@@ -74,7 +93,7 @@ func CreateTask(options TaskOptions) (Task, error) {
 	if err := os.WriteFile(file, []byte(content), 0644); err != nil {
 		return Task{}, err
 	}
-	return Task{Title: title, Path: file}, nil
+	return Task{Title: title, Path: file, Created: true}, nil
 }
 
 func taskDocument(title, id string, created time.Time) string {

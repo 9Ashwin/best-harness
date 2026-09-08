@@ -6,7 +6,7 @@
 
 Best Harness 是一个轻量、可移植的编码 Agent 工作流工具。它只报告 Git 仓库中可观察的事实：指导文件、工作区变更、暂存路径和可能的验证命令；没有证据的部分明确标为未测量，不会伪装成质量评分或正确性结论。
 
-它还提供可选的任务辅助命令：生成适合 Codex 会话的标题，并创建一份轻量 Markdown 任务记录。需求 ID 是可选项，因此可用于 GitHub Issue、外部需求系统或完全没有编号的个人项目。
+对于明确的实现、设计、排查和交付任务，它默认创建或复用轻量 Markdown 任务记录，并生成适合 Codex 的标题。需求 ID 是可选项，因此可用于 GitHub Issue、外部需求系统或完全没有编号的个人项目。
 
 ## 快速开始
 
@@ -15,19 +15,19 @@ Best Harness 是一个轻量、可移植的编码 Agent 工作流工具。它只
 ```bash
 go -C skills/best-harness/scripts run . inspect --staged --format markdown
 go -C skills/best-harness/scripts run . task title --title "提升导出可靠性"
-go -C skills/best-harness/scripts run . task new --title "提升导出可靠性"
+go -C skills/best-harness/scripts run . task ensure --title "提升导出可靠性"
 ```
 
 带可选外部编号、并指定任务目录：
 
 ```bash
-go -C skills/best-harness/scripts run . task new \
+go -C skills/best-harness/scripts run . task ensure \
   --id "GH-42" \
   --title "提升导出可靠性" \
   --dir planning
 ```
 
-有 `--id` 时会创建 `planning/gh-42-提升导出可靠性/README.md`；没有编号时默认创建 `tasks/提升导出可靠性/README.md`。
+有 `--id` 时会创建 `planning/gh-42-提升导出可靠性/README.md`；没有编号时默认创建 `tasks/提升导出可靠性/README.md`。同名目录已存在时，`task ensure` 会复用其中的 `README.md` 而不覆盖内容。
 
 ## 使用 npx 安装 Skill
 
