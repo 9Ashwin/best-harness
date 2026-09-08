@@ -1,0 +1,33 @@
+{
+  "name": "best-harness",
+  "version": "0.1.0",
+  "description": "Evidence-first delivery inspection and optional task conventions for coding agents.",
+  "author": {
+    "name": "Best Harness contributors",
+    "email": "ashwin@users.noreply.github.com",
+    "url": "https://github.com/9Ashwin"
+  },
+  "homepage": "https://github.com/9Ashwin/best-harness",
+  "repository": "https://github.com/9Ashwin/best-harness",
+  "license": "MIT",
+  "keywords": ["coding-agent", "harness", "evidence", "codex", "git"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Best Harness",
+    "shortDescription": "Inspect delivery evidence and create optional task records",
+    "longDescription": "A portable, evidence-first toolkit for coding-agent delivery checks, Git inspection, and tracker-optional task records.",
+    "developerName": "Best Harness contributors",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/9Ashwin/best-harness",
+    "privacyPolicyURL": "https://github.com/9Ashwin/best-harness/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/9Ashwin/best-harness/blob/main/TERMS.md",
+    "defaultPrompt": [
+      "Inspect this repository's delivery evidence and identify unmeasured checks.",
+      "Create a tracker-optional task record for this coding task.",
+      "Generate a concise Codex session title for this task."
+    ],
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}
