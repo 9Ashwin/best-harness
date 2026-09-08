@@ -29,6 +29,25 @@ go -C skills/best-harness/scripts run . task new \
 
 有 `--id` 时会创建 `planning/gh-42-提升导出可靠性/README.md`；没有编号时默认创建 `tasks/提升导出可靠性/README.md`。
 
+## 使用 npx 安装 Skill
+
+使用 `npx skills` 将完整 Skill 包（包括 Go 脚本）安装到当前项目的 Codex：
+
+```bash
+npx -y skills@latest add 9Ashwin/best-harness \
+  --skill best-harness \
+  --agent codex \
+  --yes
+```
+
+安装器会创建 `.agents/skills/best-harness/`。从安装目录直接运行 CLI：
+
+```bash
+go -C .agents/skills/best-harness/scripts run . inspect --staged --format markdown
+```
+
+加上 `--global` 可安装到所有 Codex 项目。安装后新开一个 Agent 会话，让 Skill 清单重新加载。
+
 ## 它能观察什么
 
 | 范围 | 可观察证据 | 不代表什么 |

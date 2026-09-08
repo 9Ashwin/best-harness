@@ -29,6 +29,25 @@ go -C skills/best-harness/scripts run . task new \
 
 The task helper creates `planning/gh-42-improve-export-reliability/README.md`. Without `--id`, it creates `tasks/improve-export-reliability/README.md`.
 
+## Install the Skill with npx
+
+Install the complete Skill bundle, including its Go scripts, into the current project for Codex:
+
+```bash
+npx -y skills@latest add 9Ashwin/best-harness \
+  --skill best-harness \
+  --agent codex \
+  --yes
+```
+
+The installer creates `.agents/skills/best-harness/`. Run the bundled CLI from that directory:
+
+```bash
+go -C .agents/skills/best-harness/scripts run . inspect --staged --format markdown
+```
+
+Use `--global` to install it for every Codex project. Start a new agent session after installation so the Skill inventory reloads.
+
 ## What it observes
 
 | Area | Evidence | Boundary |
